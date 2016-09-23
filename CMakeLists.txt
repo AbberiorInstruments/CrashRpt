@@ -1,5 +1,6 @@
 # Preserve backwards compatibility
 cmake_minimum_required (VERSION 2.8)
+cmake_policy(SET CMP0040 OLD)
 
 set(CMAKE_CONFIGURATION_TYPES Debug Release CACHE TYPE INTERNAL FORCE )
 
