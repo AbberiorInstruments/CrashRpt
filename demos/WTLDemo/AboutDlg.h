@@ -33,7 +33,12 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #include "stdafx.h"
 #include <shellapi.h>
+
+#pragma warning(push)
+#pragma warning(disable : 4838)
 #include <atlctrlx.h>
+#pragma warning(pop)
+
 #include "CrashRpt.h"
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>

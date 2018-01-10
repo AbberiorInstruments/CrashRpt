@@ -283,14 +283,14 @@ BOOL CHttpRequestSender::InternalSend()
 				bRedirect = TRUE;
 
 				TCHAR szBuffer[1024]=_T("");
-				DWORD dwBuffSize = 1024*sizeof(TCHAR);	
+				DWORD dwBuffSize2 = 1024*sizeof(TCHAR);	
 				DWORD nIndex = 0;				
 
-				BOOL bQueryInfo = HttpQueryInfo(hRequest, HTTP_QUERY_LOCATION,
+				BOOL bQueryInfo2 = HttpQueryInfo(hRequest, HTTP_QUERY_LOCATION,
 						szBuffer,
-						&dwBuffSize,
+						&dwBuffSize2,
 						&nIndex);
-				if(!bQueryInfo)
+				if(!bQueryInfo2)
 				{
 					m_Assync->SetProgress(_T("Failed to redirect."), 100, false);
 					goto cleanup;
@@ -300,9 +300,9 @@ BOOL CHttpRequestSender::InternalSend()
 					// Parse the redirect URL
 					ParseURL(szBuffer, szProtocol, 512, szServer, 512, dwPort, szURI, 1024);
 
-					CString sMsg;
-					sMsg.Format(_T("Redirecting to %s"), szBuffer);
-					m_Assync->SetProgress(sMsg, 0, true);
+					CString sMsg2;
+					sMsg2.Format(_T("Redirecting to %s"), szBuffer);
+					m_Assync->SetProgress(sMsg2, 0, true);
 					continue;
 				}
 			}
@@ -403,14 +403,14 @@ BOOL CHttpRequestSender::WriteTextPart(HINTERNET hRequest, CString sName)
 
         std::string sBuffer = it->second.substr(pos, dwBytesRead);
 
-        DWORD dwBytesWritten = 0;
-        bRet=InternetWriteFile(hRequest, sBuffer.c_str(), dwBytesRead, &dwBytesWritten);
+        DWORD dwBytesWritten2 = 0;
+        bRet=InternetWriteFile(hRequest, sBuffer.c_str(), dwBytesRead, &dwBytesWritten2);
         if(!bRet)
         {
             m_Assync->SetProgress(_T("Error uploading text part data."), 0);
             return FALSE;
         }
-        UploadProgress(dwBytesWritten);
+        UploadProgress(dwBytesWritten2);
 
         pos += dwBytesRead;    
     }
@@ -509,14 +509,14 @@ BOOL CHttpRequestSender::WriteAttachmentPart(HINTERNET hRequest, CString sName)
         if(dwBytesRead==0)
             break; // EOF
 
-        DWORD dwBytesWritten = 0;
-        bRet=InternetWriteFile(hRequest, pBuffer, dwBytesRead, &dwBytesWritten);
+        DWORD dwBytesWritten2 = 0;
+        bRet=InternetWriteFile(hRequest, pBuffer, dwBytesRead, &dwBytesWritten2);
         if(!bRet)
         {
             m_Assync->SetProgress(_T("Error uploading attachment part data."), 0);
             return FALSE;
         }
-        UploadProgress(dwBytesWritten);
+        UploadProgress(dwBytesWritten2);
     }
 
     CloseHandle(hFile);
@@ -580,7 +580,7 @@ BOOL CHttpRequestSender::FormatTextPartHeader(CString sName, CString& sPart)
     if(it==m_Request.m_aTextFields.end())
         return FALSE;
 
-    sPart.Format(m_sTextPartHeaderFmt, m_sBoundary, it->first);    
+    sPart.Format(m_sTextPartHeaderFmt, LPCTSTR(m_sBoundary), LPCTSTR(it->first));
 
     return TRUE;
 }
@@ -597,7 +597,7 @@ BOOL CHttpRequestSender::FormatAttachmentPartHeader(CString sName, CString& sTex
     if(it==m_Request.m_aIncludedFiles.end())
         return FALSE; 
 
-    sText.Format(m_sFilePartHeaderFmt, m_sBoundary, it->first, Utility::GetFileName(it->second.m_sSrcFileName), it->second.m_sContentType);
+    sText.Format(m_sFilePartHeaderFmt, LPCTSTR(m_sBoundary), LPCTSTR(it->first), LPCTSTR(Utility::GetFileName(it->second.m_sSrcFileName)), LPCTSTR(it->second.m_sContentType));
     return TRUE;
 }
 
@@ -609,7 +609,7 @@ BOOL CHttpRequestSender::FormatAttachmentPartFooter(CString sName, CString& sTex
 
 BOOL CHttpRequestSender::FormatTrailingBoundary(CString& sText)
 {
-    sText.Format(_T("--%s--\r\n"), m_sBoundary);
+    sText.Format(_T("--%s--\r\n"), LPCTSTR(m_sBoundary));
     return TRUE;
 }
 

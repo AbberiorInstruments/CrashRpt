@@ -348,11 +348,11 @@ int process_report(LPTSTR szInput, LPTSTR szInputMD5, LPTSTR szOutput,
         if(bInputMD5FromDir)
         {
             sMD5DirName = szInputMD5;
-            int pos = sMD5DirName.rfind('\\');
-            if(pos<0) // There is no back slash in path
+            size_t pos2 = sMD5DirName.rfind('\\');
+            if(pos2 == tstring::npos) // There is no back slash in path
                 sMD5DirName = _T(""); 
-            else if(pos!=(int)sMD5DirName.length()-1) // Append the back slash to dir name
-                sMD5DirName = sMD5DirName.substr(0, pos+1);
+            else if(pos2!=(int)sMD5DirName.length()-1) // Append the back slash to dir name
+                sMD5DirName = sMD5DirName.substr(0, pos2+1);
         }
     }
     else
@@ -817,33 +817,33 @@ int output_document(CrpHandle hReport, FILE* f)
                 get_prop(hReport, sStackTableId.c_str(), CRP_COL_STACK_SOURCE_FILE, sSourceFile, j);              
                 get_prop(hReport, sStackTableId.c_str(), CRP_COL_STACK_SOURCE_LINE, sSourceLine, j);              
 
-                tstring str;
-                str = sModuleName;
-                if(!str.empty())
-                    str += _T("!");
+                tstring str2;
+                str2 = sModuleName;
+                if(!str2.empty())
+                    str2 += _T("!");
 
                 if(sSymbolName.empty())
-                    str += sAddrPCOffset;  
+                    str2 += sAddrPCOffset;  
                 else
                 {
-                    str += sSymbolName;
-                    str += _T("+");
-                    str += sOffsInSymbol;
+                    str2 += sSymbolName;
+                    str2 += _T("+");
+                    str2 += sOffsInSymbol;
                 }
 
                 if(!sSourceFile.empty())
                 {
-                    int pos = sSourceFile.rfind('\\');
-                    if(pos>=0)
+                    size_t pos = sSourceFile.rfind('\\');
+                    if(pos!=tstring::npos)
                         sSourceFile = sSourceFile.substr(pos+1);
-                    str += _T(" [ ");
-                    str += sSourceFile;
-                    str += _T(": ");
-                    str += sSourceLine;
-                    str += _T(" ] ");
+                    str2 += _T(" [ ");
+                    str2 += sSourceFile;
+                    str2 += _T(": ");
+                    str2 += sSourceLine;
+                    str2 += _T(" ] ");
                 } 
 
-                doc.PutTableCell(str.c_str(), 32, true);                    
+                doc.PutTableCell(str2.c_str(), 32, true);                    
             }       
 
             doc.EndSection();

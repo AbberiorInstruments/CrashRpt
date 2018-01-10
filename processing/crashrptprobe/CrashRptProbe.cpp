@@ -811,14 +811,14 @@ crpGetPropertyW(
             }
             else
             {
-                std::map<CString, CString>::iterator it = pDescReader->m_aFileItems.begin();
+                std::map<CString, CString>::iterator it2 = pDescReader->m_aFileItems.begin();
                 int i;
-                for(i=0; i<nRowIndex; i++) it++;
+                for(i=0; i<nRowIndex; i++) it2++;
 
                 if(sColumnId.Compare(CRP_COL_FILE_ITEM_NAME)==0)
-                    pszPropVal = strconv.t2w(it->first);    
+                    pszPropVal = strconv.t2w(it2->first);    
                 else
-                    pszPropVal = strconv.t2w(it->second);    
+                    pszPropVal = strconv.t2w(it2->second);    
             }
         }
         else
@@ -848,14 +848,14 @@ crpGetPropertyW(
         else if( sColumnId.Compare(CRP_COL_PROPERTY_NAME)==0 || 
             sColumnId.Compare(CRP_COL_PROPERTY_VALUE)==0 )
         { 
-            std::map<CString, CString>::iterator it = pDescReader->m_aCustomProps.begin();
+            std::map<CString, CString>::iterator it2 = pDescReader->m_aCustomProps.begin();
             int i;
-            for(i=0; i<nRowIndex; i++) it++;
+            for(i=0; i<nRowIndex; i++) it2++;
 
             if(sColumnId.Compare(CRP_COL_PROPERTY_NAME)==0)
-                pszPropVal = strconv.t2w(it->first);    
+                pszPropVal = strconv.t2w(it2->first);    
             else
-                pszPropVal = strconv.t2w(it->second);          
+                pszPropVal = strconv.t2w(it2->second);          
         }
         else
         {

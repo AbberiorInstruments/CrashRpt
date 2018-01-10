@@ -58,6 +58,11 @@ namespace ATL
 };
 #endif // _WTL_SUPPORT_SDK_ATL3
 
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4302)
+#pragma warning(disable : 4838)
+
 #include <atlapp.h>
 
 extern CAppModule _Module;
@@ -67,6 +72,9 @@ extern CAppModule _Module;
 #include <atlframe.h>
 #include <atlctrls.h>
 #include <atldlgs.h>
+
+#pragma warning(pop)
+
 #include <set>
 #include <map>
 #include <string>

@@ -1520,10 +1520,10 @@ public:
 			if (GetData()->nAllocLength < nNewLength)
 			{
 				CStringData* pOldData = GetData();
-				LPTSTR pstr = m_pchData;
+				LPTSTR pstr2 = m_pchData;
 				if(!AllocBuffer(nNewLength))
 					return -1;
-				SecureHelper::memcpy_x(m_pchData, (nNewLength + 1) * sizeof(TCHAR), pstr, (pOldData->nDataLength + 1) * sizeof(TCHAR));
+				SecureHelper::memcpy_x(m_pchData, (nNewLength + 1) * sizeof(TCHAR), pstr2, (pOldData->nDataLength + 1) * sizeof(TCHAR));
 				CString::Release(pOldData);
 			}
 

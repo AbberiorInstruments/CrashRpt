@@ -338,10 +338,10 @@ BOOL CVideoRecorder::EncodeVideo()
 	/* Write OGG page */
 	for(;;)
 	{
-		int ret = ogg_stream_flush(&to,&og);
-		if(ret==0)
+		int ret2 = ogg_stream_flush(&to,&og);
+		if(ret2==0)
 			break;
-		if(ret<0)
+		if(ret2<0)
 			goto cleanup;
 		fwrite(og.header,1,og.header_len,fout);
 		fwrite(og.body,1,og.body_len,fout);
@@ -367,10 +367,10 @@ BOOL CVideoRecorder::EncodeVideo()
 		{
 			/* Write OGG page */
 			ogg_stream_packetin(&to,&op);
-			int ret = ogg_stream_pageout(&to,&og);
-			if(ret<0)
+			int ret2 = ogg_stream_pageout(&to,&og);
+			if(ret2<0)
 				goto cleanup;
-			if(ret!=0)
+			if(ret2!=0)
 			{
 				fwrite(og.header,1,og.header_len,fout);
 				fwrite(og.body,1,og.body_len,fout);
@@ -395,10 +395,10 @@ BOOL CVideoRecorder::EncodeVideo()
 	/* Write OGG page */
 	for(;;)
 	{
-		int ret = ogg_stream_flush(&to,&og);
-		if(ret==0)
+		int ret2 = ogg_stream_flush(&to,&og);
+		if(ret2==0)
 			break;
-		if(ret<0)
+		if(ret2<0)
 			goto cleanup;
 		fwrite(og.header,1,og.header_len,fout);
 		fwrite(og.body,1,og.body_len,fout);
@@ -575,14 +575,14 @@ void CVideoRecorder::RGB_To_YV12( unsigned char *pRGBData, int nFrameWidth,
 			unsigned char G = pRGBData[nRGBOffs+1];
 			unsigned char R = pRGBData[nRGBOffs+2];
 
-			float y = (float)( R*66 + G*129 + B*25 + 128 ) / 256 + 16;
-			float u = (float)( R*-38 + G*-74 + B*112 + 128 ) / 256 + 128;
-			float v = (float)( R*112 + G*-94 + B*-18 + 128 ) / 256 + 128;
+			float fy = (float)( R*66 + G*129 + B*25 + 128 ) / 256 + 16;
+			float fu = (float)( R*-38 + G*-74 + B*112 + 128 ) / 256 + 128;
+			float fv = (float)( R*112 + G*-94 + B*-18 + 128 ) / 256 + 128;
 
 			// NOTE: We're converting pRGBData to YUV in-place here as well as writing out YUV to pFullYPlane/pDownsampledUPlane/pDownsampledVPlane.
-			pRGBData[nRGBOffs+0] = (unsigned char)y;
-			pRGBData[nRGBOffs+1] = (unsigned char)u;
-			pRGBData[nRGBOffs+2] = (unsigned char)v;
+			pRGBData[nRGBOffs+0] = (unsigned char)fy;
+			pRGBData[nRGBOffs+1] = (unsigned char)fu;
+			pRGBData[nRGBOffs+2] = (unsigned char)fv;
 
 			// Write out the Y plane directly here rather than in another loop.
 			pYPlaneOut[nYPlaneOut++] = pRGBData[nRGBOffs+0];

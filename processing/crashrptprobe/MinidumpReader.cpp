@@ -114,7 +114,7 @@ int CMiniDumpReader::Open(CString sFileName, CString sSymSearchPath)
         return 3;
     }
 
-    m_DumpData.m_hProcess = (HANDLE)(++dwProcessID);  
+    m_DumpData.m_hProcess = (HANDLE)(UINT_PTR)(++dwProcessID);
 
     DWORD dwOptions = 0;
     //dwOptions |= SYMOPT_DEFERRED_LOADS; // Symbols are not loaded until a reference is made requiring the symbols be loaded.
@@ -333,7 +333,7 @@ int CMiniDumpReader::ReadExceptionStream()
             {
                 sMsg.Format(_T("Unhandled exception at 0x%I64x in %s: 0x%x : %s"),
                     m_DumpData.m_uExceptionAddress,
-                    m_DumpData.m_Modules[nExcModuleRowID].m_sModuleName,
+                    LPCTSTR(m_DumpData.m_Modules[nExcModuleRowID].m_sModuleName),
                     m_DumpData.m_uExceptionCode,
                     _T("Exception description.")
                     );
@@ -442,9 +442,9 @@ int CMiniDumpReader::ReadModuleListStream()
 
                 CString sMsg;
                 if(m.m_bImageUnmatched)
-                    sMsg.Format(_T("Loaded '*%s'"), sModuleName);
+                    sMsg.Format(_T("Loaded '*%s'"), LPCTSTR(sModuleName));
                 else
-                    sMsg.Format(_T("Loaded '%s'"), m.m_sLoadedImageName);
+                    sMsg.Format(_T("Loaded '%s'"), LPCTSTR(m.m_sLoadedImageName));
 
                 if(m.m_bImageUnmatched)
                     sMsg += _T(", No matching binary found.");          
@@ -666,7 +666,7 @@ int CMiniDumpReader::StackWalk(DWORD dwThreadId)
         BOOL bWalk = ::StackWalk64(
             dwMachineType,               // machine type
             m_DumpData.m_hProcess,       // our process handle
-            (HANDLE)dwThreadId,          // thread ID
+            (HANDLE)(UINT_PTR)dwThreadId,          // thread ID
             &sf,                         // stack frame
             dwMachineType==IMAGE_FILE_MACHINE_I386?NULL:(&Context), // used for non-I386 machines 
             ReadProcessMemoryProc64,     // our routine

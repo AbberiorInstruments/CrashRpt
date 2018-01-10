@@ -210,13 +210,11 @@ int Utility::GetOSFriendlyName(CString& sOSName)
 
 BOOL Utility::IsOS64Bit()
 {
-    BOOL b64Bit = FALSE;
-
 #ifdef _WIN64
     // 64-bit applications always run under 64-bit Windows
     return TRUE;
-#endif
-
+#else
+	BOOL b64Bit = FALSE;
     // Check for 32-bit applications
 
     typedef BOOL (WINAPI *PFNISWOW64PROCESS)(HANDLE, PBOOL);
@@ -238,6 +236,7 @@ BOOL Utility::IsOS64Bit()
     }
 
     return b64Bit;
+#endif
 }
 
 int Utility::GetGeoLocation(CString& sGeoLocation)

@@ -458,7 +458,7 @@ int CCrashInfoReader::Init(LPCTSTR szFileMappingName)
     {
         // Unblock the parent process
         CString sEventName;
-        sEventName.Format(_T("Local\\CrashRptEvent_%s"), eri.m_sCrashGUID);
+        sEventName.Format(_T("Local\\CrashRptEvent_%s"), LPCTSTR(eri.m_sCrashGUID));
         HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, sEventName);
         if(hEvent!=NULL)
             SetEvent(hEvent);
@@ -1292,12 +1292,12 @@ BOOL CCrashInfoReader::RemoveFilesFromCrashReport(int nReport, std::vector<CStri
 		if(it==m_Reports[nReport].m_FileItems.end())
             continue; // Such file item name does not exist, skip
 		
-		strconv_t strconv;
+		strconv_t strconv2;
 		TiXmlHandle hElem = hFileItems.ToElement()->FirstChild("FileItem");
 		while(hElem.ToElement()!=NULL)
 		{
 			const char* szName = hElem.ToElement()->Attribute("name");
-			if(szName!=NULL && strcmp(strconv.t2a(FilesToRemove[i]), szName)==0)
+			if(szName!=NULL && strcmp(strconv2.t2a(FilesToRemove[i]), szName)==0)
 			{
 				hFileItems.ToElement()->RemoveChild(hElem.ToElement());              
 				break;
