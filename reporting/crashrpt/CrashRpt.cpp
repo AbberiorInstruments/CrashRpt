@@ -702,119 +702,118 @@ crExceptionFilter(unsigned int code, struct _EXCEPTION_POINTERS* ep)
 //-----------------------------------------------------------------------------------------------
 // Below crEmulateCrash() related stuff goes 
 
-
-class CDerived;
-class CBase
+namespace
 {
-public:
-    CBase(CDerived *derived): m_pDerived(derived) {};
-    ~CBase();
-    virtual void function(void) = 0;
+	class CBase
+	{
+	public:
+		CBase()
+		{
+			function2();
+		}
+		virtual void function(void) = 0;
+		virtual void function2(void)
+		{
+			function();
+		}
+	};
 
-    CDerived * m_pDerived;
-};
-
-class CDerived : public CBase
-{
-public:
-    CDerived() : CBase(this) {};   // C4355
-    virtual void function(void) {};
-};
-
-CBase::~CBase()
-{
-    m_pDerived -> function();
-}
+	class Derived : public CBase
+	{
+	public:
+		void function() {};
+	};
 
 #include <float.h>
-void sigfpe_test()
-{ 
-    // Code taken from http://www.devx.com/cplus/Article/34993/1954
-		
-    //Set the x86 floating-point control word according to what
-    //exceptions you want to trap. 
-    _clearfp(); //Always call _clearfp before setting the control
-    //word
-    //Because the second parameter in the following call is 0, it
-    //only returns the floating-point control word
-    unsigned int cw; 
+	void sigfpe_test()
+	{
+		// Code taken from http://www.devx.com/cplus/Article/34993/1954
+
+		//Set the x86 floating-point control word according to what
+		//exceptions you want to trap. 
+		_clearfp(); //Always call _clearfp before setting the control
+		//word
+		//Because the second parameter in the following call is 0, it
+		//only returns the floating-point control word
+		unsigned int cw;
 #if _MSC_VER<1400
-    cw = _controlfp(0, 0); //Get the default control
+		cw = _controlfp(0, 0); //Get the default control
 #else
-    _controlfp_s(&cw, 0, 0); //Get the default control
+		_controlfp_s(&cw, 0, 0); //Get the default control
 #endif 
-    //word
-    //Set the exception masks off for exceptions that you want to
-    //trap.  When a mask bit is set, the corresponding floating-point
-    //exception is //blocked from being generating.
-    cw &=~(EM_OVERFLOW|EM_UNDERFLOW|EM_ZERODIVIDE|
-        EM_DENORMAL|EM_INVALID);
-    //For any bit in the second parameter (mask) that is 1, the 
-    //corresponding bit in the first parameter is used to update
-    //the control word.  
-    unsigned int cwOriginal = 0;
+	//word
+	//Set the exception masks off for exceptions that you want to
+	//trap.  When a mask bit is set, the corresponding floating-point
+	//exception is //blocked from being generating.
+		cw &= ~(EM_OVERFLOW | EM_UNDERFLOW | EM_ZERODIVIDE |
+			EM_DENORMAL | EM_INVALID);
+		//For any bit in the second parameter (mask) that is 1, the 
+		//corresponding bit in the first parameter is used to update
+		//the control word.  
+		unsigned int cwOriginal = 0;
 #if _MSC_VER<1400
-    cwOriginal = _controlfp(cw, MCW_EM); //Set it.
+		cwOriginal = _controlfp(cw, MCW_EM); //Set it.
 #else
-    _controlfp_s(&cwOriginal, cw, MCW_EM); //Set it.
+		_controlfp_s(&cwOriginal, cw, MCW_EM); //Set it.
 #endif
-    //MCW_EM is defined in float.h.
-        
-    // Divide by zero
+	//MCW_EM is defined in float.h.
 
-    float a = 1.0f;
-    float b = 0.0f;
-    float c = a/b;
-    c;
+	// Divide by zero
 
-	//Restore the original value when done:
-	//_controlfp_s(cwOriginal, MCW_EM);
-}
+		float a = 1.0f;
+		float b = 0.0f;
+		float c = a / b;
+		c;
+
+		//Restore the original value when done:
+		//_controlfp_s(cwOriginal, MCW_EM);
+	}
 
 #define BIG_NUMBER 0x1fffffff
-//#define BIG_NUMBER 0xf
+	//#define BIG_NUMBER 0xf
 #pragma warning(disable: 4717) // avoid C4717 warning
 #pragma warning(disable: 4702) // avoid C4702 warning
-int RecurseAlloc() 
-{
-    int *pi = NULL;
-	for(;;)
-		pi = new int[BIG_NUMBER];
-    return 0;
-}
+	int RecurseAlloc()
+	{
+		int *pi = NULL;
+		for (;;)
+			pi = new int[BIG_NUMBER];
+		return 0;
+	}
 
-// Vulnerable function
+	// Vulnerable function
 #pragma warning(disable : 4996)   // for strcpy use
 #pragma warning(disable : 6255)   // warning C6255: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead
 #pragma warning(disable : 6204)   // warning C6204: Possible buffer overrun in call to 'strcpy': use of unchecked parameter 'str'
-void test_buffer_overrun(const char *str) 
-{
-    char* buffer = (char*)_alloca(10);
-    strcpy(buffer, str); // overrun buffer !!!
+	void test_buffer_overrun(const char *str)
+	{
+		char* buffer = (char*)_alloca(10);
+		strcpy(buffer, str); // overrun buffer !!!
 
-    // use a secure CRT function to help prevent buffer overruns
-    // truncate string to fit a 10 byte buffer
-    // strncpy_s(buffer, _countof(buffer), str, _TRUNCATE);
-}
+		// use a secure CRT function to help prevent buffer overruns
+		// truncate string to fit a 10 byte buffer
+		// strncpy_s(buffer, _countof(buffer), str, _TRUNCATE);
+	}
 #pragma warning(default : 4996)  
 #pragma warning(default : 6255)   
 #pragma warning(default : 6204)   
 
-// Stack overflow function
-struct DisableTailOptimization
-{
-       ~DisableTailOptimization() {
-               ++ v;
-       }
-       static int v;
-};
+	// Stack overflow function
+	struct DisableTailOptimization
+	{
+		~DisableTailOptimization() {
+			++v;
+		}
+		static int v;
+	};
 
-int DisableTailOptimization::v = 0;
+	int DisableTailOptimization::v = 0;
 
-static void CauseStackOverflow()
-{
-       DisableTailOptimization v;
-       CauseStackOverflow();
+	static void CauseStackOverflow()
+	{
+		DisableTailOptimization v;
+		CauseStackOverflow();
+	}
 }
 
 CRASHRPTAPI(int) 
@@ -847,8 +846,8 @@ crEmulateCrash(unsigned ExceptionType) throw (...)
         break;
     case CR_CPP_PURE_CALL:
         {
-            // pure virtual method call
-            CDerived derived;
+			Derived d;
+			d.function();
         }
         break;
     case CR_CPP_SECURITY_ERROR:
@@ -919,7 +918,7 @@ crEmulateCrash(unsigned ExceptionType) throw (...)
         }
     case CR_NONCONTINUABLE_EXCEPTION: 
         {
-            // Raise noncontinuable software exception
+            // Raise non-continuable software exception
             RaiseException(123, EXCEPTION_NONCONTINUABLE, 0, NULL);        
         }
         break;
