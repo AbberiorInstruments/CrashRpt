@@ -15,12 +15,6 @@ be found in the Authors.txt file in the root of the source tree.
 
 #pragma once
 
-// Change these values to use different versions
-#define WINVER		0x0500
-#define _WIN32_WINNT	0x0501
-#define _WIN32_IE	0x0501
-#define _RICHEDIT_VER	0x0200
-
 #include <atldef.h>
 #if ( _ATL_VER < 0x0800 )
 #define _WTL_SUPPORT_SDK_ATL3 // Support of VC++ Express 2005 and ATL 3.0

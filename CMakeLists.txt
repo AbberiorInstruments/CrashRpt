@@ -45,9 +45,18 @@ else(CMAKE_CL_64)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/lib)
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/lib)
 endif(CMAKE_CL_64)
+
+# Previously in source files:
+# #define WINVER		0x0500
+# #define _WIN32_WINNT	0x0501
+# #define _WIN32_IE	0x0501
+# #define _RICHEDIT_VER	0x0200
 	
-# Precompiled headers stuff (CMake doesn't have a standard command for enabling precompiled headers,
-# so we have to use a macro)
+if (WIN32)
+	add_definitions(-D_WIN32_WINNT=0x600)
+	add_definitions(-DWINVER=0x600)
+endif()
+
 MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
   IF(MSVC)	
     GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
